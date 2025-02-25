@@ -1,0 +1,10 @@
+env
+tls.crt
+tls.key
+kubeconfig
+
+**.tfstate*
+/*.json
+.terraform*
+*.plan
+terraform.tfvars

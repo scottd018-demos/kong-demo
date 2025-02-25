@@ -1,0 +1,67 @@
+image:
+  repository: kong/kong-gateway
+  tag: "3.9"
+
+secretVolumes:
+- kong-cluster-cert
+
+admin:
+  enabled: false
+
+#env:
+#  role: data_plane
+#  database: "off"
+#  cluster_mtls: pki
+#  cluster_control_plane: ddf75cb193.us.cp0.konghq.com:443
+#  cluster_server_name: ddf75cb193.us.cp0.konghq.com
+#  cluster_telemetry_endpoint: ddf75cb193.us.tp0.konghq.com:443
+#  cluster_telemetry_server_name: ddf75cb193.us.tp0.konghq.com
+#  cluster_cert: /etc/secrets/kong-cluster-cert/tls.crt
+#  cluster_cert_key: /etc/secrets/kong-cluster-cert/tls.key
+#  lua_ssl_trusted_certificate: system
+#  konnect_mode: "on"
+#  vitals: "off"
+#  nginx_worker_processes: "1"
+#  upstream_keepalive_max_requests: "100000"
+#  nginx_http_keepalive_requests: "100000"
+#  proxy_access_log: "off"
+#  dns_stale_ttl: "3600"
+
+env:
+  role: data_plane
+  database: "off"
+  cluster_mtls: pki
+  cluster_control_plane: 74bffef683.us.cp0.konghq.com:443
+  cluster_server_name: 74bffef683.us.cp0.konghq.com
+  cluster_telemetry_endpoint: 74bffef683.us.tp0.konghq.com:443
+  cluster_telemetry_server_name: 74bffef683.us.tp0.konghq.com
+  cluster_cert: /etc/secrets/kong-cluster-cert/tls.crt
+  cluster_cert_key: /etc/secrets/kong-cluster-cert/tls.key
+  lua_ssl_trusted_certificate: system
+  konnect_mode: "on"
+  vitals: "off"
+  nginx_worker_processes: "1"
+  upstream_keepalive_max_requests: "100000"
+  nginx_http_keepalive_requests: "100000"
+  proxy_access_log: "off"
+  dns_stale_ttl: "3600"
+
+ingressController:
+  enabled: false
+  installCRDs: false
+
+resources:
+  requests:
+    cpu: 250m
+    memory: "512Mi"
+
+deployment:
+  hostNetwork: true
+
+proxy:
+  http:
+    containerPort: 8000
+    servicePort: 8000
+  tls:
+    containerPort: 8443
+    servicePort: 8443

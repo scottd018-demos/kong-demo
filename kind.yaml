@@ -1,0 +1,31 @@
+---
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+kubeadmConfigPatches:
+  - |
+    apiVersion: kubeadm.k8s.io/v1beta2
+    kind: ClusterConfiguration
+    networking:
+      disableDefaultCNI: false
+      podSubnet: 10.100.0.0/16
+    metadata:
+      name: config
+networking:
+  apiServerAddress: 127.0.0.1
+nodes:
+  - role: control-plane
+    extraPortMappings:
+      # ui
+      - containerPort: 80
+        hostPort: 80
+        protocol: TCP
+        listenAddress: "0.0.0.0"
+      - containerPort: 3000
+        hostPort: 3000
+        protocol: TCP
+        listenAddress: "0.0.0.0"
+      # kong proxy
+      - containerPort: 8000
+        hostPort: 8000
+        protocol: TCP
+        listenAddress: "0.0.0.0"
