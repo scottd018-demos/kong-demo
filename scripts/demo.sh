@@ -6,7 +6,7 @@ set -e
 
 KONG_PROXY_URL="http://127.0.0.1.nip.io:8000"
 echo "using KONG_PROXY_URL: [${KONG_PROXY_URL}]..."
-echo "using OPENAI_API_KEY: [$OPENAI_API_KEY]..."
+#echo "using OPENAI_API_KEY: [$OPENAI_API_KEY]..."
 
 # run demo get models
 echo "running get models..."
