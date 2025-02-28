@@ -1,5 +1,9 @@
 #!/usr/bin/env sh
 
+#
+# WARN/NOTE: not maintained.  replace with terraform.  see `make kong` target.
+#
+
 set -e
 
 . ./env

@@ -11,3 +11,6 @@ cluster-config:
 
 kong:
 	@cd terraform/test && terraform init -upgrade && terraform apply
+
+demo:
+	@scripts/demo.sh
