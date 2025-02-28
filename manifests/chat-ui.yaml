@@ -1,41 +1,13 @@
----
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: chat-ui
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: chat-config
-  namespace: chat-ui
-data:
-  .env.local: |
-    OPENAI_API_HOST=http://kong-kong-proxy.kong.svc.cluster.local:8000/openai
-    DEFAULT_MODEL=gpt-4o-mini
-  next.config.js: |
-    const { i18n } = require('./next-i18next.config');
-
-    /** @type {import('next').NextConfig} */
-    const nextConfig = {
-      i18n,
-      reactStrictMode: true,
-
-      experimental: {
-        logging: "verbose",
-      },
-
-      webpack(config, { isServer, dev }) {
-        config.experiments = {
-          asyncWebAssembly: true,
-          layers: true,
-        };
-
-        return config;
-      },
-    };
-
-    module.exports = nextConfig;
+# ---
+# apiVersion: v1
+# kind: ConfigMap
+# metadata:
+#   name: chat-config
+#   namespace: chat-ui
+# data:
+#   .env.local: |
+#     OPENAI_API_HOST=http://kong-kong-proxy.kong.svc.cluster.local:8000/openai
+#     DEFAULT_MODEL=gpt-4o-mini
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -68,27 +40,26 @@ spec:
             - "--"
             - "--port"
             - "3000"
-          # env:
-          #   - name: NEXTAUTH_SECRET
-          #     value: wa9uuwkxOXK6VPmALTvZNsbd/xan+hhRznC0rq/t1p4=
-          #   - name: NEXTAUTH_ENABLED
-          #     value: "false"
-          #   - name: NEXTAUTH_URL
-          #     value: ""
+          envFrom:
+            - secretRef:
+                name: openai-access-token
+          env:
+            - name: "OPENAI_API_HOST"
+              value: "http://kong-kong-proxy.kong.svc.cluster.local:8000/openai"
+            - name: "DEFAULT_MODEL"
+              value: "gpt-4o-mini"
           ports:
-            # - containerPort: 80
-            #   hostPort: 80
             - containerPort: 3000
               hostPort: 3000
-          volumeMounts:
-            - name: config-volume
-              mountPath: /app/.env.local
-              subPath: .env.local
-            - name: config-volume
-              mountPath: /app/next.config.js
-              subPath: next.config.js
-      volumes:
-        - name: config-volume
-          configMap:
-            name: chat-config
+      #     volumeMounts:
+      #       - name: config-volume
+      #         mountPath: /app/.env.local
+      #         subPath: .env.local
+      #       - name: config-volume
+      #         mountPath: /app/next.config.js
+      #         subPath: next.config.js
+      # volumes:
+      #   - name: config-volume
+      #     configMap:
+      #       name: chat-config
 

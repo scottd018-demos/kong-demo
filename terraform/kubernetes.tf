@@ -59,3 +59,103 @@
 
 #   depends_on = [kind_cluster.gateway, kubernetes_manifest.crds]
 # }
+
+#
+# kong gateway
+#
+resource "kubernetes_namespace" "kong" {
+  metadata {
+    name = "kong"
+  }
+}
+
+resource "kubernetes_secret" "kong_tls" {
+  type = "kubernetes.io/tls"
+
+  metadata {
+    name      = "kong-cluster-cert"
+    namespace = kubernetes_namespace.kong.metadata[0].name
+  }
+
+  data = {
+    "tls.crt" = tls_self_signed_cert.konnect.cert_pem
+    "tls.key" = tls_private_key.konnect.private_key_pem
+  }
+}
+
+locals {
+  control_plane_endpoint = replace(konnect_gateway_control_plane.control_plane.config.control_plane_endpoint, "https://", "")
+  telemetry_endpoint     = replace(konnect_gateway_control_plane.control_plane.config.telemetry_endpoint, "https://", "")
+}
+
+resource "helm_release" "kong" {
+  name       = "kong"
+  namespace  = kubernetes_namespace.kong.metadata[0].name
+  repository = "https://charts.konghq.com"
+  chart      = "kong"
+  version    = "2.47.0"
+
+  values = [
+    "${file(var.kong_helm_values_file)}"
+  ]
+
+  set {
+    name  = "env.cluster_control_plane"
+    value = "${local.control_plane_endpoint}:443"
+  }
+
+  set {
+    name  = "env.cluster_server_name"
+    value = local.control_plane_endpoint
+  }
+
+  set {
+    name  = "env.cluster_telemetry_endpoint"
+    value = "${local.telemetry_endpoint}:443"
+  }
+
+  set {
+    name  = "env.cluster_telemetry_server_name"
+    value = local.telemetry_endpoint
+  }
+
+  depends_on = [kubernetes_secret.kong_tls]
+}
+
+#
+# chat ui
+#
+resource "kubernetes_namespace" "chat_ui" {
+  metadata {
+    name = "chat-ui"
+  }
+}
+
+resource "kubernetes_secret" "openai_access_token" {
+  metadata {
+    name      = "openai-access-token"
+    namespace = kubernetes_namespace.chat_ui.metadata[0].name
+  }
+
+  data = {
+    "OPENAI_API_KEY" = var.openai_access_token
+  }
+}
+
+resource "kubernetes_manifest" "chat_ui" {
+  count = length(var.chat_manifest_files)
+
+  manifest = provider::kubernetes::manifest_decode(file(var.chat_manifest_files[count.index]))
+
+  timeouts {
+    create = "2m"
+    update = "2m"
+    delete = "2m"
+  }
+
+  wait {
+    rollout = true
+  }
+
+  depends_on = [kubernetes_namespace.chat_ui, kubernetes_secret.openai_access_token]
+}

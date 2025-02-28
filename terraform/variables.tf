@@ -39,8 +39,14 @@ variable "kube_context" {
   description = "Cluster context from var.kubeconfig used for authentication against the Kubernetes cluster."
 }
 
-variable "manifest_files" {
+variable "chat_manifest_files" {
   type        = list(string)
-  default     = []
-  description = "List of Kubernetes manifest files that contain dependent resources prior to setting up Kong gateway."
+  default     = ["../../manifests/chat-ui.yaml"]
+  description = "List of Kubernetes manifest files that contain chat UI manifest files."
+}
+
+variable "kong_helm_values_file" {
+  type        = string
+  default     = "../../values.yaml"
+  description = "Location of the Kong values file."
 }

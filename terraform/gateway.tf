@@ -17,7 +17,7 @@ resource "konnect_gateway_service" "openai" {
   host       = "api.openai.com"
   port       = 443
   path       = "/v1/models"
-  tls_verify = true
+  tls_verify = false
 }
 
 resource "konnect_gateway_service" "proxy" {
@@ -103,7 +103,7 @@ resource "tls_self_signed_cert" "konnect" {
   private_key_pem = tls_private_key.konnect.private_key_pem
 
   subject {
-    common_name = "konnect-default"
+    common_name = "kong_clustering"
   }
 
   validity_period_hours = 3650 * 24
