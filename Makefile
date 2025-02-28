@@ -10,4 +10,4 @@ cluster-config:
 	@kubectl apply -f manifests/metallb.yaml
 
 kong:
-	@cd terraform test && terraform init -upgrade && terraform apply
+	@cd terraform/test && terraform init -upgrade && terraform apply

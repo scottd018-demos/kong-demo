@@ -94,6 +94,45 @@ resource "konnect_gateway_plugin_ai_proxy" "ai_proxy" {
   }
 }
 
+resource "konnect_gateway_plugin_ai_rate_limiting_advanced" "rate_limiter" {
+  control_plane_id = konnect_gateway_control_plane.control_plane.id
+  route = {
+    id = konnect_gateway_route.chat.id
+  }
+
+  enabled = true
+
+  config = {
+    dictionary_name      = "kong_rate_limiting_counters"
+    disable_penalty      = false
+    error_code           = 429
+    error_hide_providers = false
+    error_message        = "AI token rate limit exceeded for provider(s): "
+    hide_client_headers  = false
+    identifier           = "consumer"
+
+    llm_providers = [
+      {
+        limit       = 1
+        name        = "openai"
+        window_size = 15
+      }
+    ]
+
+    retry_after_jitter_max = 0
+    strategy               = "local"
+    tokens_count_strategy  = "total_tokens"
+    window_type            = "sliding"
+  }
+
+  protocols = [
+    "grpc",
+    "grpcs",
+    "http",
+    "https"
+  ]
+}
+
 resource "tls_private_key" "konnect" {
   algorithm   = "ECDSA"
   ecdsa_curve = "P384"

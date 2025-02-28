@@ -23,15 +23,5 @@ DEMO_OUT=$(curl --http1.1 -s -X POST $KONG_PROXY_URL/openai/v1/chat/completions 
   --header "Content-Type: application/json" \
   --header "Authorization: Bearer $OPENAI_API_KEY" \
   --data-raw '{ "model": "gpt-4o-mini", "messages": [ { "role": "system", "content": "You are a mathematician" }, { "role": "user", "content": "Say this is a test!"} ] }')
-#  --data '{
-#     "model": "gpt-4o-mini",
-#     "messages": [
-#       {
-#         "role": "user", 
-#         "content": "Say this is a test!"
-#       }
-#     ]
-#   }')
 
 echo $(echo $DEMO_OUT | jq -r)
-
