@@ -133,6 +133,32 @@ resource "konnect_gateway_plugin_ai_rate_limiting_advanced" "rate_limiter" {
   ]
 }
 
+resource "konnect_gateway_plugin_ai_prompt_guard" "prompt_guard" {
+  control_plane_id = konnect_gateway_control_plane.control_plane.id
+  route = {
+    id = konnect_gateway_route.chat.id
+  }
+
+  enabled = true
+
+  config = {
+    allow_all_conversation_history = false
+    deny_patterns = [
+      "(?i).*password.*"
+    ]
+    match_all_roles       = false
+    max_request_body_size = 8192
+  }
+
+  protocols = [
+    "grpc",
+    "grpcs",
+    "http",
+    "https"
+  ]
+}
+
+
 resource "tls_private_key" "konnect" {
   algorithm   = "ECDSA"
   ecdsa_curve = "P384"
