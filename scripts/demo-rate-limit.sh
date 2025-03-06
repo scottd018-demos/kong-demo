@@ -18,6 +18,8 @@ echo `echo $DEMO_GET_OUT | jq -r`
 
 # run demo post chat
 echo "running demo..."
+PROMPT="Say this is a test!"
+echo "Asking the question: ${PROMPT}"
 DEMO_OUT=$(curl --http1.1 -s -X POST $KONG_PROXY_URL/openai/v1/chat/completions \
   --header "Accept: application/json" \
   --header "Content-Type: application/json" \
