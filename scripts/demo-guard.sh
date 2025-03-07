@@ -9,12 +9,12 @@ echo "using KONG_PROXY_URL: [${KONG_PROXY_URL}]..."
 #echo "using OPENAI_API_KEY: [$OPENAI_API_KEY]..."
 
 # run demo get models
-echo "running get models..."
-DEMO_GET_OUT=$(curl --http1.1 -s -X GET $KONG_PROXY_URL/openai/v1/models \
-  --header "Accept: application/json" \
-  --header "Content-Type: application/json" \
-  --header "Authorization: Bearer $OPENAI_API_KEY")
-echo `echo $DEMO_GET_OUT | jq -r`
+# echo "running get models..."
+# DEMO_GET_OUT=$(curl --http1.1 -s -X GET $KONG_PROXY_URL/openai/v1/models \
+#   --header "Accept: application/json" \
+#   --header "Content-Type: application/json" \
+#   --header "Authorization: Bearer $OPENAI_API_KEY")
+# echo `echo $DEMO_GET_OUT | jq -r`
 
 # run demo post chat
 echo "running demo..."
